@@ -1,5 +1,14 @@
 package org.wikimedia.highlighter.experimental.elasticsearch;
 
+import static java.util.stream.Collectors.toCollection;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.util.BytesRef;
@@ -17,18 +26,17 @@ import org.wikimedia.highlighter.experimental.lucene.hit.weight.DefaultSimilarit
 import org.wikimedia.search.highlighter.experimental.HitEnum;
 import org.wikimedia.search.highlighter.experimental.Segmenter;
 import org.wikimedia.search.highlighter.experimental.SourceExtracter;
-import org.wikimedia.search.highlighter.experimental.hit.*;
+import org.wikimedia.search.highlighter.experimental.hit.ConcatHitEnum;
+import org.wikimedia.search.highlighter.experimental.hit.EmptyHitEnum;
+import org.wikimedia.search.highlighter.experimental.hit.PositionBoostingHitEnumWrapper;
 import org.wikimedia.search.highlighter.experimental.hit.ReplayingHitEnum.HitEnumAndLength;
+import org.wikimedia.search.highlighter.experimental.hit.TermWeigher;
+import org.wikimedia.search.highlighter.experimental.hit.WeightFilteredHitEnumWrapper;
 import org.wikimedia.search.highlighter.experimental.hit.weight.CachingTermWeigher;
 import org.wikimedia.search.highlighter.experimental.hit.weight.ConstantTermWeigher;
 import org.wikimedia.search.highlighter.experimental.snippet.MultiSegmenter;
 import org.wikimedia.search.highlighter.experimental.source.NonMergingMultiSourceExtracter;
 import org.wikimedia.search.highlighter.experimental.source.StringSourceExtracter;
-
-import java.io.IOException;
-import java.util.*;
-
-import static java.util.stream.Collectors.toCollection;
 
 @SuppressWarnings("checkstyle:classfanoutcomplexity") // to improve if we ever touch that code again
 public class FieldWrapper {
@@ -345,7 +353,7 @@ public class FieldWrapper {
     }
 
     public int getPositionGap() {
-        if(this.positionGap == -1) {
+        if (this.positionGap == -1) {
             this.positionGap = context.fieldType.indexAnalyzer().getPositionIncrementGap(context.fieldType.name());
         }
         return this.positionGap;
