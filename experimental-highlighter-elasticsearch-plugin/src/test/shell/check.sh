@@ -1,18 +1,18 @@
 #!/bin/bash
 
 curl -XDELETE "http://localhost:9200/test?pretty"
-curl -XPOST "http://localhost:9200/test?pretty"
-curl -XPUT http://localhost:9200/test/test/_mapping?pretty -d'{
+curl -XPUT "http://localhost:9200/test?pretty"
+curl -XPUT "http://localhost:9200/test/_mapping?pretty" -H 'Content-Type: application/json' -d'{
   "properties": {
     "title" : {
-      "type": "string",
+      "type": "text",
       "index_options": "offsets",
       "term_vector": "with_positions_offsets"
     }
   }
 }'
 
-curl -XPOST "http://localhost:9200/test/test?pretty" -d '{"title": "a pretty tiny string to test with "}'
+curl -XPOST "http://localhost:9200/test/_doc?pretty" -H 'Content-Type: application/json' -d '{"title": "a pretty tiny string to test with "}'
 echo '{"title": "a much larger string to test with ' > /tmp/largerString
 echo '{"title": "huge string with ' > /tmp/hugeString
 echo '{"title": "many string with ' > /tmp/manyString
@@ -41,10 +41,10 @@ echo 'and larger at the end"}' >> /tmp/largerString
 echo 'and huge at the end"}' >> /tmp/hugeString
 echo '"}' >> /tmp/manyString
 echo ']}' >> /tmp/multiString
-curl -XPOST "http://localhost:9200/test/test?pretty" -d @/tmp/largerString
-curl -XPOST "http://localhost:9200/test/test?pretty" -d @/tmp/hugeString
-curl -XPOST "http://localhost:9200/test/test?pretty" -d @/tmp/manyString
-curl -XPOST "http://localhost:9200/test/test?pretty" -d @/tmp/multiString
+curl -XPOST "http://localhost:9200/test/_doc?pretty" -H 'Content-Type: application/json' -d @/tmp/largerString
+curl -XPOST "http://localhost:9200/test/_doc?pretty" -H 'Content-Type: application/json' -d @/tmp/hugeString
+curl -XPOST "http://localhost:9200/test/_doc?pretty" -H 'Content-Type: application/json' -d @/tmp/manyString
+curl -XPOST "http://localhost:9200/test/_doc?pretty" -H 'Content-Type: application/json' -d @/tmp/multiString
 curl -XPOST http://localhost:9200/test/_refresh?pretty
 
 function go() {

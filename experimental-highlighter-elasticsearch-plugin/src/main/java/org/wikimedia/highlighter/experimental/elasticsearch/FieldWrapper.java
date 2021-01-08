@@ -48,10 +48,12 @@ public class FieldWrapper {
      * If there is a TokenStream still open during the highlighting.
      */
     private TokenStream tokenStream;
+
     /**
      * Position gap for the field.  Only looked up if needed.  < 0 means not looked up.
      */
-    private int positionGap = -1;
+    private static final int POSITION_GAP_INIT = -1;
+    private int positionGap = POSITION_GAP_INIT;
 
     /**
      * Build a wrapper around the default field in the context.
@@ -246,13 +248,11 @@ public class FieldWrapper {
 
     private boolean canUsePostingsHitEnum() {
         return context.fieldType.getTextSearchInfo().hasPositions()
-                && context.fieldType.getTextSearchInfo().hasPositions();
+                && context.fieldType.getTextSearchInfo().hasOffsets();
     }
 
     private boolean canUseVectorsHitEnum() {
-        return context.fieldType.getTextSearchInfo().termVectors() != TextSearchInfo.TermVector.NONE
-                && context.fieldType.getTextSearchInfo().hasOffsets()
-                && context.fieldType.getTextSearchInfo().hasPositions();
+        return context.fieldType.getTextSearchInfo().termVectors() == TextSearchInfo.TermVector.OFFSETS;
     }
 
     private HitEnum buildPostingsHitEnum() throws IOException {
@@ -353,7 +353,7 @@ public class FieldWrapper {
     }
 
     public int getPositionGap() {
-        if (this.positionGap == -1) {
+        if (this.positionGap == POSITION_GAP_INIT) {
             this.positionGap = context.fieldType.indexAnalyzer().getPositionIncrementGap(context.fieldType.name());
         }
         return this.positionGap;
